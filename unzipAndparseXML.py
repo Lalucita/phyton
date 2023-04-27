@@ -50,16 +50,16 @@ def getStringArchivoXML(dirArchivoXLS):
 
 def crearDataFrame():
     df = pd.DataFrame()
-    df['Tipo ID']=None
-    df['Numero ID']=None
-    df['Extencion']=None
-    df['Nombre']=None
-    df['Entidad']=None
-    df['Departamento']=None
-    df['fecha']=None
-    df['Calificacion']=None
-    df['Saldo']=None
-    df['Estado']=None
+    df['Ti']=None
+    df['Nu']=None
+    df['Ex']=None
+    df['No']=None
+    df['En']=None
+    df['De']=None
+    df['fe']=None
+    df['Ca']=None
+    df['Sa']=None
+    df['Es']=None
     return df
 
 
