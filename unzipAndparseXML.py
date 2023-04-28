@@ -7,17 +7,15 @@ Created on Tue Apr 25 16:24:05 2023
 from __future__ import unicode_literals
 from zipfile import ZipFile
 import os
+import shutil
 
 
-from xlwt import Workbook
 import io
 
 import pandas as pd
 
-
 import xml.etree.ElementTree as ET
 
-from xml.dom import minidom
 
 
 
@@ -30,13 +28,15 @@ def unZip(dir_origen, path_destino):
         with ZipFile(path_zip, 'r') as zip:
             zip.extractall(path_destino)
             print("File is unzipped in "+path_destino+" folder")
-            
+        
+def getDirRepositorio():
+    return "D:\\Lucia\\buro\\buroZip\\ZipRepositorio"         
 
 def getDestino():
-    return "D:/Lucia/buro/buroZip/Descomprimido"
+    return "D:\\Lucia\\buro\\buroZip\\Descomprimido"
 
 def getOrigenArchivos():
-    return 'D:/Lucia/buro/buroZip'
+    return 'D:\\Lucia\\buro\\buroZip\\Zip'
 
 def getListaArchivos(dir_carpeta):
     contenido=os.listdir(dir_carpeta)
@@ -50,16 +50,16 @@ def getStringArchivoXML(dirArchivoXLS):
 
 def crearDataFrame():
     df = pd.DataFrame()
-    df['Ti']=None
-    df['Nu']=None
-    df['Ex']=None
-    df['No']=None
-    df['En']=None
-    df['De']=None
-    df['fe']=None
-    df['Ca']=None
-    df['Sa']=None
-    df['Es']=None
+    df['Tipo ID']=None
+    df['Numero ID']=None
+    df['Extencion']=None
+    df['Nombre']=None
+    df['Entidad']=None
+    df['Departamento']=None
+    df['fecha']=None
+    df['Calificacion']=None
+    df['Saldo']=None
+    df['Estado']=None
     return df
 
 
@@ -90,15 +90,32 @@ def xmlParcer(dirArchivoXLS):
                         contador=contador+1
                          
                 if len(mi_lista)>0:
+                    print(mi_lista)
                     df.loc[len(df)] = mi_lista
 
     df=df.drop_duplicates()
+    df['nombre_buro']="infocred"
     print(df)
     return df
 
-def eliminarArcivos(dir):
-    for file in os.scandir(dir):
+def eliminarArchivos(dir_eliminar):
+    for file in os.scandir(dir_eliminar):
+        print("este archivo"+file.path)
         os.remove(file.path)
+        
+def copiarArchivos(dir_origen, dir_destino):
+    contenido=getListaArchivos(dir_origen)
+    for archivo in contenido:
+        shutil.copy(dir_origen+"\\"+archivo, 
+                    dir_destino+"\\"+archivo)
+
+
+def rutaOrigenInfocenter():
+    return "D:\\Lucia\\buro\\buroZip\\infocenter"
+
+def rutaRepoInfocenter():
+    return "D:\\Lucia\\buro\\buroZip\\InfocenterRepositorio"
+
 
 
 
@@ -107,12 +124,22 @@ unZip(getOrigenArchivos(), getDestino())
 lista_xls=getListaArchivos(getDestino())
 for archivo in lista_xls:
     print("********* "+archivo)
-    df=xmlParcer(getDestino()+"/"+ archivo)
+    df=xmlParcer(getDestino()+"\\"+ archivo)
+    print(df)
+ 
+copiarArchivos(getOrigenArchivos(), getDirRepositorio())
+eliminarArchivos(getOrigenArchivos())
+eliminarArchivos(getDestino())
+
+## CAGAR INFOCENTER
+ruta=rutaOrigenInfocenter()
+listaInfo=getListaArchivos(ruta)
+for file in listaInfo:
+    ruta=ruta+"\\"+file
+    df = pd.read_excel(ruta)
+    df['nombre_buro']="infocenter"
+    
     print(df)
 
-    
-eliminarArcivos(getOrigenArchivos())
-    
-
-
-
+copiarArchivos(rutaOrigenInfocenter(), rutaRepoInfocenter())
+eliminarArchivos(rutaOrigenInfocenter())
